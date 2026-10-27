@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html lang="vi" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hồ Bình Phúc |  Profile </title>
+    
+    <!-- Google Fonts Sci-Fi -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@300;400;600;700;800;900&family=Orbitron:wght@500;700;800;900&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+    
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            dark: '#020617',
+                            card: 'rgba(11, 17, 32, 0.85)',
+                            cyan: '#06b6d4',
+                            purple: '#a855f7',
+                            pink: '#ec4899',
+                            emerald: '#10b981',
+                            gold: '#f59e0b'
+                        }
+                    },
+                    fontFamily: {
+                        orbitron: ['Orbitron', 'sans-serif'],
+                        vietnam: ['Be Vietnam Pro', 'sans-serif'],
+                        mono: ['Share Tech Mono', 'monospace']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            background-color: #020617;
+            color: #f8fafc;
+            font-family: 'Be Vietnam Pro', sans-serif;
+            overflow-x: hidden;
+            cursor: default;
+        }
+
+        /* Canvas Vũ Trụ */
+        #space-canvas {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            z-index: -1;
+        }
+
+        /* Lưới Cyber Subspace */
+        .cyber-grid-bg {
+            position: fixed;
+            inset: 0;
+            background-image: linear-gradient(to right, rgba(6, 182, 212, 0.04) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(6, 182, 212, 0.04) 1px, transparent 1px);
+            background-size: 40px 40px;
+            z-index: -1;
+            pointer-events: none;
+        }
+
+        /* Hiệu ứng Rung Lắc Không Gian khi Dịch Chuyển Siêu Tốc */
+        .warp-shaking {
+            animation: screenShake 0.12s linear infinite;
+        }
+
+        @keyframes screenShake {
+            0% { transform: translate(0, 0); }
+            25% { transform: translate(-5px, 5px) rotate(-0.2deg); }
+            50% { transform: translate(5px, -5px) rotate(0.2deg); }
+            75% { transform: translate(-5px, -3px); }
+            100% { transform: translate(0, 0); }
+        }
+
+        /* Overlay Chớp Sáng Hyperspace Jump */
+        #warp-overlay {
+            position: fixed;
+            inset: 0;
+            background: radial-gradient(circle, rgba(6,182,212,0.85) 0%, rgba(168,85,247,0.6) 40%, rgba(2,6,23,0.98) 90%);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 100;
+            transition: opacity 0.2s ease-out;
+        }
+
+        /* GLOSSY CARD SYSTEM */
+        .glossy-card {
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.12) 0%, rgba(15, 23, 42, 0.75) 40%, rgba(2, 6, 23, 0.9) 100%);
+            backdrop-filter: blur(24px);
+            -webkit-backdrop-filter: blur(24px);
+            border: 1px solid rgba(255, 255, 255, 0.18);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7), 
+                        inset 0 1px 0 rgba(255, 255, 255, 0.3),
+                        inset 0 -1px 0 rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glossy-card::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -150%;
+            width: 100%;
+            height: 200%;
+            background: linear-gradient(
+                60deg,
+                transparent 30%,
+                rgba(255, 255, 255, 0.25) 50%,
+                transparent 70%
+            );
+            transform: rotate(25deg);
+            transition: all 0.8s ease;
+        }
+
+        .glossy-card:hover::before {
+            left: 150%;
+        }
+
+        .glossy-card:hover {
+            border-color: rgba(6, 182, 212, 0.7);
+            box-shadow: 0 0 35px rgba(6, 182, 212, 0.4), 
+                        inset 0 1px 2px rgba(255, 255, 255, 0.5);
+            transform: translateY(-4px);
+        }
+
+        /* GLOSSY NAV ITEM FIX TÊN ĐẦU TRANG */
+        .glossy-nav-item {
+            background: linear-gradient(90deg, rgba(255,255,255,0.04) 0%, rgba(15,23,42,0.6) 100%);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .glossy-nav-item:hover {
+            background: linear-gradient(90deg, rgba(6, 182, 212, 0.25) 0%, rgba(168, 85, 247, 0.25) 100%);
+            border-color: rgba(6, 182, 212, 0.6);
+            box-shadow: 0 0 15px rgba(6, 182, 212, 0.3);
+            transform: translateY(-2px);
+        }
+
+        /* Hide scrollbar in sticky menu */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .glow-text-cyan { text-shadow: 0 0 15px rgba(6, 182, 212, 0.9), 0 0 30px rgba(6, 182, 212, 0.5); }
+
+        /* Vành Quỹ Đạo Xoay 3D quanh Avatar */
+        .orbit-ring {
+            position: absolute;
+            border-radius: 50%;
+            border: 1px dashed rgba(6, 182, 212, 0.5);
+            pointer-events: none;
+        }
+        .orbit-1 { inset: -12px; animation: spinOrbit 10s linear infinite; }
+        .orbit-2 { inset: -24px; border-color: rgba(168, 85, 247, 0.4); animation: spinOrbitReverse 15s linear infinite; }
+        .orbit-3 { inset: -36px; border-color: rgba(236, 72, 153, 0.3); animation: spinOrbit 22s linear infinite; }
+
+        @keyframes spinOrbit { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        @keyframes spinOrbitReverse { 0% { transform: rotate(360deg); } 100% { transform: rotate(0deg); } }
+
+        /* HUD Góc Trang Trí */
+        .hud-corner {
+            position: absolute;
+            width: 12px; height: 12px;
+            border-color: #06b6d4;
+            pointer-events: none;
+        }
+        .hud-tl { top: 6px; left: 6px; border-top: 2px solid; border-left: 2px solid; }
+        .hud-tr { top: 6px; right: 6px; border-top: 2px solid; border-right: 2px solid; }
+        .hud-bl { bottom: 6px; left: 6px; border-bottom: 2px solid; border-left: 2px solid; }
+        .hud-br { bottom: 6px; right: 6px; border-bottom: 2px solid; border-right: 2px solid; }
+    </style>
+</head>
+<body id="app-body" class="relative min-h-screen">
+
+    <!-- Lưới Cyber & Canvas Vũ Trụ -->
+    <div class="cyber-grid-bg"></div>
+    <canvas id="space-canvas"></canvas>
+
+    <!-- Overlay Dịch Chuyển Hyperspace Jump -->
+    <div id="warp-overlay"></div>
+
+    <!-- MAIN PROFILE STICKY HEADER (GHIM CỐ ĐỊNH PHÍA TRÊN DÙ CUỘN TRANG) -->
+    <header class="w-full bg-[#050b1e]/90 backdrop-blur-2xl border-b border-cyan-500/30 sticky top-0 z-50 shadow-[0_10px_30px_rgba(0,0,0,0.85)]">
+        <div class="max-w-6xl mx-auto px-6 py-4 space-y-3">
+            
+            <!-- HÀNG TOP: LOGO + TÊN + SĐT HOTLINE + NÚT CHỈNH SỬA -->
+            <div class="flex flex-wrap items-center justify-between gap-4">
+                
+                <!-- Left: Logo HBP + Name + Verified + Title -->
+                <div class="flex items-center gap-4">
+                    <div class="w-13 h-13 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-amber-400 via-purple-600 to-cyan-500 p-[2px] shadow-[0_0_20px_rgba(6,182,212,0.5)] flex-shrink-0">
+                        <div class="w-full h-full bg-[#080d24] rounded-[14px] flex items-center justify-center font-orbitron font-black text-amber-400 text-lg sm:text-xl tracking-wider">
+                            HBP
+                        </div>
+                    </div>
+
+                    <div>
+                        <div class="flex items-center gap-2">
+                            <h1 id="user-name-display" class="text-white text-xl sm:text-2xl font-black font-orbitron tracking-wide">Hồ Bình Phúc</h1>
+                            <span class="text-cyan-400 text-lg glow-text-cyan" title="Xác Minh Vũ Trụ"><i class="fa-solid fa-circle-check"></i></span>
+                        </div>
+                        <p id="user-title-display" class="text-gray-300 text-xs sm:text-sm font-mono mt-0.5 flex items-center gap-2">
+                            <i class="fa-solid fa-gamepad text-cyan-400"></i> Chuyên gia Test Game & Future Game Dev | BDU Student
+                        </p>
+                    </div>
+                </div>
+
+                <!-- Right: Quick Contact & Action Buttons -->
+                <div class="flex items-center gap-2.5">
+                    <a href="tel:0374053627" class="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-xl bg-cyan-500/10 border border-cyan-500/40 text-cyan-300 text-xs font-mono font-bold hover:bg-cyan-500/20 transition-all">
+                        <i class="fa-solid fa-phone text-cyan-400"></i> 0374053627
+                    </a>
+
+                    <button onclick="openEditModal()" class="px-4 py-2 rounded-xl bg-gradient-to-r from-slate-900 to-slate-800 border border-cyan-500/50 text-cyan-300 text-xs font-bold flex items-center gap-2 shadow-[0_0_15px_rgba(6,182,212,0.3)] hover:border-cyan-400 transition-all active:scale-95">
+                        <i class="fa-solid fa-pen-to-square text-cyan-400"></i>
+                        <span class="hidden sm:inline">Chỉnh Sửa</span>
+                    </button>
+
+                    <button id="audio-toggle" onclick="toggleAudio()" class="w-9 h-9 rounded-xl bg-slate-900 border border-cyan-500/40 text-cyan-400 flex items-center justify-center hover:bg-cyan-500/20 transition-all" title="Bật/Tắt Âm Thanh Sci-Fi">
+                        <i class="fa-solid fa-volume-xmark text-sm" id="audio-icon"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- HÀNG BOTTOM: MENU ĐIỀU HƯỚNG CỐ ĐỊNH CHUYỂN MỤC TỨC THÌ -->
+            <nav class="flex items-center justify-between gap-2 overflow-x-auto pt-2 border-t border-cyan-500/20 text-xs sm:text-sm font-bold font-orbitron no-scrollbar">
+                <a href="#hero" onclick="warpJump(event, 'hero')" class="glossy-nav-item flex items-center gap-2 px-4 py-2.5 rounded-xl text-cyan-300 hover:text-white whitespace-nowrap">
+                    <i class="fa-solid fa-house text-cyan-400"></i> Trang Chủ
+                </a>
+
+                <a href="#about" onclick="warpJump(event, 'about')" class="glossy-nav-item flex items-center gap-2 px-4 py-2.5 rounded-xl text-purple-300 hover:text-white whitespace-nowrap">
+                    <i class="fa-solid fa-user text-purple-400"></i> Về Tôi
+                </a>
+
+                <a href="#specialist" onclick="warpJump(event, 'specialist')" class="glossy-nav-item flex items-center gap-2 px-4 py-2.5 rounded-xl text-blue-300 hover:text-white whitespace-nowrap">
+                    <i class="fa-solid fa-code text-blue-400"></i> Game QA & Dev Pro
+                </a>
+
+                <a href="#skills" onclick="warpJump(event, 'skills')" class="glossy-nav-item flex items-center gap-2 px-4 py-2.5 rounded-xl text-amber-300 hover:text-white whitespace-nowrap">
+                    <i class="fa-solid fa-bolt text-amber-400"></i> Kỹ Năng
+                </a>
+
+                <a href="#contact" onclick="warpJump(event, 'contact')" class="glossy-nav-item flex items-center gap-2 px-4 py-2.5 rounded-xl text-emerald-300 hover:text-white whitespace-nowrap">
+                    <i class="fa-solid fa-envelope text-emerald-400"></i> Liên Hệ
+                </a>
+            </nav>
+
+        </div>
+    </header>
+
+    <!-- CONTAINER NỘI DUNG CHÍNH -->
+    <main class="max-w-6xl mx-auto px-6 py-8 space-y-12">
+
+        <!-- KHUNG 1: TRANG CHỦ / HERO BANNER -->
+        <section id="hero" class="glossy-card p-8 sm:p-12 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-10 scroll-mt-36">
+            <div class="hud-corner hud-tl"></div><div class="hud-corner hud-br"></div>
+            
+            <div class="space-y-6 text-center md:text-left flex-1">
+                <div class="inline-flex items-center gap-2.5 px-4 py-1.5 rounded-full bg-cyan-950/80 border border-cyan-500/40 text-cyan-300 font-mono text-xs">
+                    <span class="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping"></span> BDU-IT MISSION STATUS: ACTIVE // 2007
+                </div>
+
+                <h2 class="text-3xl sm:text-5xl lg:text-6xl font-orbitron font-black text-white leading-tight">
+                    XIN CHÀO, TÔI LÀ <br>
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-400 to-pink-500 glow-text-cyan">HỒ BÌNH PHÚC</span>
+                </h2>
+
+                <p class="text-slate-300 text-sm sm:text-base max-w-xl leading-relaxed font-light">
+                    Chuyên gia <span class="text-cyan-300 font-semibold">Test Game</span> & Nhà phát triển Game tương lai. Đang thực hiện sứ mệnh khám phá tri thức Công nghệ Thông tin tại <span class="text-purple-300 font-semibold">Đại học Bình Dương (BDU)</span>.
+                </p>
+
+                <div class="flex flex-wrap items-center justify-center md:justify-start gap-4 pt-2">
+                    <a href="#specialist" onclick="warpJump(event, 'specialist')" class="font-orbitron text-xs font-bold px-7 py-4 rounded-2xl bg-gradient-to-r from-cyan-400 to-blue-600 text-slate-950 hover:shadow-[0_0_30px_rgba(6,182,212,0.8)] transition-all flex items-center gap-2.5">
+                        <i class="fa-solid fa-gamepad text-base"></i> KHÁM PHÁ NĂNG LỰC
+                    </a>
+                    <a href="#contact" onclick="warpJump(event, 'contact')" class="font-orbitron text-xs font-bold px-7 py-4 rounded-2xl glossy-card text-cyan-300 border border-cyan-500/40 hover:bg-cyan-500/10 transition-all flex items-center gap-2.5">
+                        <i class="fa-solid fa-paper-plane text-base text-pink-400"></i> GỬI TÍN HIỆU
+                    </a>
+                </div>
+            </div>
+
+            <!-- Avatar Hologram 3D Quỹ Đạo -->
+            <div class="relative flex justify-center items-center flex-shrink-0 my-4 md:my-0">
+                <div class="orbit-ring orbit-1"></div>
+                <div class="orbit-ring orbit-2"></div>
+                <div class="orbit-ring orbit-3"></div>
+
+                <div class="w-56 h-56 sm:w-64 sm:h-64 rounded-full p-1.5 bg-gradient-to-tr from-cyan-400 via-purple-500 to-pink-500 shadow-[0_0_40px_rgba(6,182,212,0.5)]">
+                    <img src="image copy.png" alt="Hồ Bình Phúc" class="w-full h-full object-cover rounded-full" onerror="this.src='https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80'">
+                </div>
+            </div>
+        </section>
+
+        <!-- KHUNG 2: VỀ TÔI -->
+        <section id="about" class="glossy-card p-8 sm:p-10 rounded-3xl space-y-6 scroll-mt-36">
+            <div class="hud-corner hud-tl"></div><div class="hud-corner hud-tr"></div>
+            
+            <h3 class="font-orbitron text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 to-purple-400 flex items-center gap-3">
+                <i class="fa-solid fa-user text-cyan-400"></i> VỀ TÔI (PROFILE DATA)
+            </h3>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                <div class="bg-slate-900/80 p-5 rounded-2xl border border-cyan-500/30 space-y-2">
+                    <p class="text-xs text-cyan-400 font-mono tracking-widest">NGÀY SINH</p>
+                    <p class="text-xl font-bold text-white">24 / 09 / 2007</p>
+                    <p class="text-xs text-slate-400">Cung Thiên Bình (Libra) - Cân bằng & Tư duy</p>
+                </div>
+
+                <div class="bg-slate-900/80 p-5 rounded-2xl border border-purple-500/30 space-y-2">
+                    <p class="text-xs text-purple-400 font-mono tracking-widest">QUÊ QUÁN</p>
+                    <p class="text-xl font-bold text-white">An Giang</p>
+                    <p class="text-xs text-slate-400">Vùng đất Bảy Núi hùng vĩ & Đầy linh khí</p>
+                </div>
+
+                <div class="bg-slate-900/80 p-5 rounded-2xl border border-pink-500/30 space-y-2">
+                    <p class="text-xs text-pink-400 font-mono tracking-widest">HỌC VẤN</p>
+                    <p class="text-xl font-bold text-white">ĐH Bình Dương</p>
+                    <p class="text-xs text-slate-400">Chuyên ngành CNTT (BDU Tech Academy)</p>
+                </div>
+
+                <div class="bg-slate-900/80 p-5 rounded-2xl border border-emerald-500/30 space-y-2">
+                    <p class="text-xs text-emerald-400 font-mono tracking-widest">SIÊU NĂNG LỰC</p>
+                    <p class="text-xl font-bold text-white">Giao Tiếp Tốt</p>
+                    <p class="text-xs text-slate-400">Lắng nghe, truyền đạt & Kết nối nhóm</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- KHUNG 3: GAME QA & DEV SPECIALIST PRO -->
+        <section id="specialist" class="glossy-card p-8 sm:p-10 rounded-3xl space-y-6 scroll-mt-36">
+            <h3 class="font-orbitron text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-cyan-400 flex items-center gap-3">
+                <i class="fa-solid fa-code text-blue-400"></i> GAME QA & DEV SPECIALIST PRO
+            </h3>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <div class="bg-slate-900/80 p-6 rounded-2xl border border-cyan-500/30 space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="p-3 bg-cyan-500/20 rounded-xl text-cyan-400 text-2xl">
+                            <i class="fa-solid fa-bug-slash"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-white text-lg font-orbitron">Chuyên Gia Test Game (QA/QC)</h4>
+                            <p class="text-xs text-cyan-400 font-mono">Chuyên môn hiện tại</p>
+                        </div>
+                    </div>
+                    <ul class="space-y-2 text-sm text-slate-300 leading-relaxed">
+                        <li class="flex items-start gap-2"><i class="fa-solid fa-check text-cyan-400 mt-1"></i> Bắt lỗi bug đồ họa, va chạm (collision), logic gameplay.</li>
+                        <li class="flex items-start gap-2"><i class="fa-solid fa-check text-cyan-400 mt-1"></i> Viết Test Cases & Báo cáo Lỗi chi tiết cho đội ngũ Dev qua Jira.</li>
+                        <li class="flex items-start gap-2"><i class="fa-solid fa-check text-cyan-400 mt-1"></i> Đánh giá độ cân bằng nhân vật & trải nghiệm người dùng (UX).</li>
+                    </ul>
+                </div>
+
+                <div class="bg-slate-900/80 p-6 rounded-2xl border border-purple-500/30 space-y-4">
+                    <div class="flex items-center gap-3">
+                        <div class="p-3 bg-purple-500/20 rounded-xl text-purple-400 text-2xl">
+                            <i class="fa-solid fa-gamepad"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-white text-lg font-orbitron">Game Developer (Lập Trình Game)</h4>
+                            <p class="text-xs text-purple-400 font-mono">Định hướng tương lai</p>
+                        </div>
+                    </div>
+                    <ul class="space-y-2 text-sm text-slate-300 leading-relaxed">
+                        <li class="flex items-start gap-2"><i class="fa-solid fa-rocket text-purple-400 mt-1"></i> Trau dồi tư duy Lập trình C#, C++, Cấu trúc dữ liệu tại BDU.</li>
+                        <li class="flex items-start gap-2"><i class="fa-solid fa-rocket text-purple-400 mt-1"></i> Sáng tạo cơ chế gameplay, lập trình hệ thống vật lý 3D trên Unity.</li>
+                        <li class="flex items-start gap-2"><i class="fa-solid fa-rocket text-purple-400 mt-1"></i> Hướng tới trở thành Lead Game Creator sản xuất các tựa game đỉnh cao.</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- KHUNG 4: KỸ NĂNG -->
+        <section id="skills" class="glossy-card p-8 sm:p-10 rounded-3xl space-y-6 scroll-mt-36">
+            <h3 class="font-orbitron text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-pink-400 flex items-center gap-3">
+                <i class="fa-solid fa-bolt text-amber-400"></i> KỸ NĂNG & TOOLKIT
+            </h3>
+
+            <div class="space-y-4">
+                <div>
+                    <p class="text-xs font-mono text-slate-400 mb-2">// KỸ NĂNG CHUYÊN MÔN (TECHNICAL SKILLS):</p>
+                    <div class="flex flex-wrap gap-3 font-mono text-xs">
+                        <span class="px-4 py-2 rounded-xl bg-slate-900 border border-cyan-500/40 text-cyan-300">Game Testing / QA QC</span>
+                        <span class="px-4 py-2 rounded-xl bg-slate-900 border border-cyan-500/40 text-cyan-300">Bug Tracking (Jira)</span>
+                        <span class="px-4 py-2 rounded-xl bg-slate-900 border border-purple-500/40 text-purple-300">Lập trình C# / C++</span>
+                        <span class="px-4 py-2 rounded-xl bg-slate-900 border border-purple-500/40 text-purple-300">Unity Engine 3D</span>
+                        <span class="px-4 py-2 rounded-xl bg-slate-900 border border-pink-500/40 text-pink-300">Unreal Engine 5</span>
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <p class="text-xs font-mono text-slate-400 mb-2">// KỸ NĂNG MỀM & THỰC CHUYẾN (SOFT SKILLS):</p>
+                    <div class="flex flex-wrap gap-3 font-mono text-xs">
+                        <span class="px-4 py-2 rounded-xl bg-slate-900 border border-emerald-500/40 text-emerald-300">Giao Tiếp Xuất Sắc</span>
+                        <span class="px-4 py-2 rounded-xl bg-slate-900 border border-emerald-500/40 text-emerald-300">Làm Việc Nhóm (Teamwork)</span>
+                        <span class="px-4 py-2 rounded-xl bg-slate-900 border border-emerald-500/40 text-emerald-300">Tư Duy Phản Biện Game</span>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- KHUNG 5: LIÊN HỆ (ĐÃ BỔ SUNG SĐT VÀ ZALO) -->
+        <section id="contact" class="glossy-card p-8 sm:p-12 rounded-3xl space-y-6 scroll-mt-36 text-center">
+            <div class="hud-corner hud-bl"></div><div class="hud-corner hud-br"></div>
+
+            <h3 class="font-orbitron text-3xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 via-cyan-400 to-purple-400">
+                KẾT NỐI TÍN HIỆU VỚI PHÚC
+            </h3>
+            <p class="text-slate-300 text-sm max-w-lg mx-auto">
+                Sẵn sàng hợp tác cho các dự án Game QA/QC, Game Development hoặc giao lưu trao đổi kiến thức CNTT!
+            </p>
+
+            <div class="flex flex-wrap justify-center gap-4 pt-2">
+                <a href="tel:0374053627" class="px-6 py-3.5 rounded-2xl glossy-card flex items-center gap-3 text-cyan-300 border border-cyan-500/40 font-mono text-sm hover:bg-cyan-500/20 transition-all">
+                    <i class="fa-solid fa-phone text-lg text-cyan-400"></i> SĐT: 0374053627
+                </a>
+                <a href="https://zalo.me/0374053627" target="_blank" class="px-6 py-3.5 rounded-2xl glossy-card flex items-center gap-3 text-blue-300 border border-blue-500/40 font-mono text-sm hover:bg-blue-500/20 transition-all">
+                    <i class="fa-solid fa-comment-dots text-lg text-blue-400"></i> Zalo: 0374053627
+                </a>
+                <a href="mailto:binhphuc.240907@gmail.com" class="px-6 py-3.5 rounded-2xl glossy-card flex items-center gap-3 text-pink-300 border border-pink-500/40 font-mono text-sm hover:bg-pink-500/20 transition-all">
+                    <i class="fa-solid fa-envelope text-lg text-pink-400"></i> binhphuc.240907@gmail.com
+                </a>
+                <a href="#" class="px-6 py-3.5 rounded-2xl glossy-card flex items-center gap-3 text-purple-300 border border-purple-500/40 font-mono text-sm hover:bg-purple-500/20 transition-all">
+                    <i class="fa-brands fa-facebook-f text-lg text-purple-400"></i> Hồ Bình Phúc
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="border-t border-slate-800/80 py-8 text-center font-mono text-xs text-slate-500">
+        <p>© 2026 HỒ BÌNH PHÚC // BDU IT EXPLORER. ALL RIGHTS RESERVED.</p>
+    </footer>
+
+    <!-- MODAL CHỈNH SỬA PROFILE -->
+    <div id="edit-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md hidden z-50 flex items-center justify-center p-4">
+        <div class="glossy-card w-full max-w-md p-6 sm:p-8 rounded-3xl space-y-5 border border-cyan-500/40 shadow-[0_0_50px_rgba(6,182,212,0.4)]">
+            <div class="flex justify-between items-center border-b border-cyan-500/30 pb-3">
+                <h3 class="font-orbitron text-xl font-bold text-cyan-400 flex items-center gap-2">
+                    <i class="fa-solid fa-pen-to-square"></i> CHỈNH SỬA PROFILE
+                </h3>
+                <button onclick="closeEditModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+            </div>
+
+            <div class="space-y-4 font-mono text-xs">
+                <div>
+                    <label class="block text-slate-300 mb-1.5 font-bold">Họ & Tên Phi Hành Gia:</label>
+                    <input id="input-name" type="text" value="Hồ Bình Phúc" class="w-full bg-slate-950/90 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-cyan-400 transition-colors">
+                </div>
+                <div>
+                    <label class="block text-slate-300 mb-1.5 font-bold">Chuyên Môn & Danh Xưng:</label>
+                    <input id="input-title" type="text" value="Chuyên gia Test Game & Future Game Developer | BDU IT Student" class="w-full bg-slate-950/90 border border-slate-700 rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-cyan-400 transition-colors">
+                </div>
+            </div>
+
+            <div class="flex justify-end gap-3 pt-2">
+                <button onclick="closeEditModal()" class="px-5 py-2.5 rounded-xl bg-slate-800 text-slate-300 font-bold text-xs hover:bg-slate-700">Hủy</button>
+                <button onclick="saveProfile()" class="px-5 py-2.5 rounded-xl bg-gradient-to-r from-cyan-400 to-blue-600 text-slate-950 font-bold text-xs hover:shadow-[0_0_20px_rgba(6,182,212,0.6)]">Lưu Thay Đổi</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT: CANVAS 3D, AUDIO SYNTHESIZER & HYPERSPACE JUMP -->
+    <script>
+        /* --- 1. WEB AUDIO API SYNTHESIZER --- */
+        let audioCtx = null;
+        let isAudioOn = false;
+
+        function initAudio() {
+            if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+
+        function playBeep(freq = 600, duration = 0.08) {
+            if (!isAudioOn || !audioCtx) return;
+            try {
+                let osc = audioCtx.createOscillator();
+                let gain = audioCtx.createGain();
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+                gain.gain.setValueAtTime(0.05, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch(e){}
+        }
+
+        function playWarpSound() {
+            if (!isAudioOn || !audioCtx) return;
+            try {
+                let osc = audioCtx.createOscillator();
+                let gain = audioCtx.createGain();
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(120, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(1400, audioCtx.currentTime + 0.6);
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.001, audioCtx.currentTime + 0.65);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + 0.65);
+            } catch(e){}
+        }
+
+        function toggleAudio() {
+            initAudio();
+            isAudioOn = !isAudioOn;
+            const icon = document.getElementById('audio-icon');
+            if (isAudioOn) {
+                icon.className = 'fa-solid fa-volume-high text-cyan-400';
+                playBeep(800, 0.1);
+            } else {
+                icon.className = 'fa-solid fa-volume-xmark text-slate-500';
+            }
+        }
+
+        /* --- 2. CANVAS VŨ TRỤ 3D & HYPERSPACE WARP --- */
+        const canvas = document.getElementById('space-canvas');
+        const ctx = canvas.getContext('2d');
+        let width, height, stars = [];
+        let speed = 0.6, targetSpeed = 0.6;
+
+        function resize() {
+            width = window.innerWidth;
+            height = window.innerHeight;
+            canvas.width = width;
+            canvas.height = height;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        class Star {
+            constructor() { this.reset(); }
+            reset() {
+                this.x = (Math.random() - 0.5) * width * 2;
+                this.y = (Math.random() - 0.5) * height * 2;
+                this.z = Math.random() * width;
+                this.pz = this.z;
+                this.color = ['#06b6d4', '#a855f7', '#ffffff', '#ec4899', '#38bdf8'][Math.floor(Math.random() * 5)];
+            }
+            update() {
+                this.pz = this.z;
+                this.z -= speed;
+                if (this.z <= 0) { this.reset(); this.z = width; this.pz = this.z; }
+            }
+            draw() {
+                let sx = (this.x / this.z) * (width / 2) + width / 2;
+                let sy = (this.y / this.z) * (height / 2) + height / 2;
+                let px = (this.x / this.pz) * (width / 2) + width / 2;
+                let py = (this.y / this.pz) * (height / 2) + height / 2;
+                let size = (1 - this.z / width) * 2.8;
+
+                ctx.beginPath();
+                if (speed > 5) {
+                    ctx.strokeStyle = this.color;
+                    ctx.lineWidth = size * 2.2;
+                    ctx.moveTo(px, py); ctx.lineTo(sx, sy);
+                    ctx.stroke();
+                } else {
+                    ctx.fillStyle = this.color;
+                    ctx.arc(sx, sy, Math.max(0.1, size), 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+        }
+
+        for (let i = 0; i < 450; i++) stars.push(new Star());
+
+        function render() {
+            speed += (targetSpeed - speed) * 0.1;
+            ctx.fillStyle = 'rgba(2, 6, 23, 0.38)';
+            ctx.fillRect(0, 0, width, height);
+            stars.forEach(s => { s.update(); s.draw(); });
+            requestAnimationFrame(render);
+        }
+        render();
+
+        /* --- 3. HIỆU ỨNG DỊCH CHUYỂN SIÊU TỐC HYPERSPACE WARP JUMP --- */
+        function warpJump(event, targetId) {
+            if (event) event.preventDefault();
+            playBeep(900, 0.05);
+            playWarpSound();
+
+            const overlay = document.getElementById('warp-overlay');
+            const body = document.getElementById('app-body');
+            const targetEl = document.getElementById(targetId);
+
+            targetSpeed = 55;
+            overlay.style.opacity = '1';
+            body.classList.add('warp-shaking');
+
+            setTimeout(() => {
+                if (targetEl) targetEl.scrollIntoView({ behavior: 'smooth' });
+            }, 250);
+
+            setTimeout(() => {
+                targetSpeed = 0.6;
+                overlay.style.opacity = '0';
+                body.classList.remove('warp-shaking');
+            }, 750);
+        }
+
+        /* --- 4. MODAL CHỈNH SỬA PROFILE --- */
+        function openEditModal() {
+            playBeep(700, 0.05);
+            document.getElementById('edit-modal').classList.remove('hidden');
+        }
+        function closeEditModal() {
+            playBeep(500, 0.05);
+            document.getElementById('edit-modal').classList.add('hidden');
+        }
+        function saveProfile() {
+            playBeep(1100, 0.08);
+            const newName = document.getElementById('input-name').value;
+            const newTitle = document.getElementById('input-title').value;
+
+            if (newName) document.getElementById('user-name-display').innerText = newName;
+            if (newTitle) document.getElementById('user-title-display').innerHTML = `<i class="fa-solid fa-gamepad text-cyan-400"></i> ${newTitle}`;
+
+            closeEditModal();
+        }
+    </script>
+</body>
+</html>
